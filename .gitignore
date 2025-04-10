@@ -1,0 +1,15 @@
+
+bin/
+obj/
+*.exe
+*.dll
+
+appsettings.Development.json
+*.env
+
+
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
