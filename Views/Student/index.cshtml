@@ -1,0 +1,42 @@
+@model List<Student_MVC.Models.StudentsModel>
+
+@{
+    ViewBag.Title = "Student List";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">📚 Registered Students</h2>
+
+    <a href="@Url.Action("Register", "Student")" class="btn btn-primary mb-3">+ Register New Student</a>
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">No students have been registered yet.</div>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Phone-Number</th>
+                    <th>Date of Birth</th>
+                    <th>Gender</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model)
+                {
+                    <tr>
+                        <td>@student.ID</td>
+                        <td>@student.FullName</td>
+                        <td>@student.PhoneNumber</td>
+                        <td>@student.DateOfBirth</td>
+                        <td>@student.Gender</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
