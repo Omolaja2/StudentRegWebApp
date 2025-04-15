@@ -1,40 +1,49 @@
 @model Student_MVC.Models.StudentsModel
 
 @{
-    ViewBag.Title = "Register Student⬇️";
+    ViewBag.Title = "Register Student ⬇️";
 }
 
 <div class="container mt-4">
-    <h2 class="mb-4">📝 Register a New Student</h2>
+    <h2 class="mb-4">📝 Register New Student</h2>
 
     @using (Html.BeginForm())
     {
         <div class="mb-3">
             @Html.LabelFor(m => m.FullName)
             @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
         </div>
 
         <div class="mb-3">
             @Html.LabelFor(m => m.PhoneNumber)
             @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
         </div>
 
         <div class="mb-3">
-            @Html.Label("Date of Birth (Year)")
-            @Html.TextBoxFor(m => m.DateOfBirth, new { @class = "form-control", type = "number" })
+            @Html.LabelFor(m => m.Email)
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
         </div>
 
         <div class="mb-3">
-            @Html.LabelFor(m => m.ID)
-            @Html.TextBoxFor(m => m.ID, new { @class = "form-control" })
+            @Html.LabelFor(m => m.DateOfBirth)
+            @Html.TextBoxFor(m => m.DateOfBirth, new { @class = "form-control", type = "date" })
+            @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "text-danger" })
         </div>
 
         <div class="mb-3">
             @Html.LabelFor(m => m.Gender)
             @Html.TextBoxFor(m => m.Gender, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "text-danger" })
         </div>
 
         <button type="submit" class="btn btn-success">Register</button>
         <a href="@Url.Action("Index", "Student")" class="btn btn-secondary">Cancel</a>
     }
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

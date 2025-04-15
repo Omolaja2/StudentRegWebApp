@@ -18,9 +18,9 @@
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
                     <th>Full Name</th>
                     <th>Phone-Number</th>
+                    <th>Email</th>
                     <th>Date of Birth</th>
                     <th>Gender</th>
                 </tr>
@@ -29,9 +29,9 @@
                 @foreach (var student in Model)
                 {
                     <tr>
-                        <td>@student.ID</td>
                         <td>@student.FullName</td>
                         <td>@student.PhoneNumber</td>
+                        <td>@student.Email</td>
                         <td>@student.DateOfBirth</td>
                         <td>@student.Gender</td>
                     </tr>
