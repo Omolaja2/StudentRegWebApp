@@ -13,6 +13,7 @@ namespace Student_MVC.Models
             : base(options)
         {
         }
+        public DbSet<AdminModel> Admins { get; set; }
 
         public DbSet<StudentsModel> Students { get; set; }
     }
