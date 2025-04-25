@@ -5,26 +5,30 @@ using MimeKit;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 namespace Student_MVC.Controllers
 {
     public class StudentController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _contexts;
         private readonly EmailSettings _emailSettings;
 
         public StudentController(ApplicationDbContext context, IOptions<EmailSettings> emailSettings)
         {
-            _context = context;
+            _contexts = context;
             _emailSettings = emailSettings.Value;
         }
 
+        // Display all students
         public IActionResult Index()
         {
-            var students = _context.Students.ToList();
+            var students = _contexts.Students.ToList();
             return View(students);
         }
 
+        // GET: Register new student
         public IActionResult Register()
         {
             if (HttpContext.Session.GetString("AdminUsername") == null)
@@ -34,10 +38,10 @@ namespace Student_MVC.Controllers
             return View();
         }
 
+        // POST: Register student
         [HttpPost]
         public async Task<IActionResult> Register(StudentsModel student)
         {
-
             if (HttpContext.Session.GetString("AdminLoggedIn") != "true")
             {
                 return RedirectToAction("Login", "Admin");
@@ -45,9 +49,9 @@ namespace Student_MVC.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Students.Add(student);
-                await _context.SaveChangesAsync();
-                await SendEmailAsync(student.Email!);
+                _contexts.Students.Add(student);
+                await _contexts.SaveChangesAsync();
+                await SendingEmail(student.Email!);
 
                 return RedirectToAction("Index");
             }
@@ -55,40 +59,106 @@ namespace Student_MVC.Controllers
             return View(student);
         }
 
-        private async Task SendEmailAsync(string email)
+        // GET: Edit student
+        public async Task<IActionResult> Edit(int id)
         {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("MamzyHub", _emailSettings.SmtpUser));
-            message.To.Add(new MailboxAddress("", email));
-            message.Subject = "Welcome to MamunHub Registration System!";
+            var student = await _contexts.Students.FindAsync(id);
+            if (student == null)
+            {
+                return NotFound();
+            }
 
-            var bodyBuilder = new BodyBuilder
+            return View(student);
+        }
+
+        // POST: Edit student
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, StudentsModel student)
+        {
+            if (id != student.StudentId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _contexts.Update(student);
+                    await _contexts.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_contexts.Students.Any(e => e.StudentId == student.StudentId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return View(student);
+        }
+
+        // Delete student
+        public async Task<IActionResult> Delete(int id)
+        {
+            var student = await _contexts.Students.FirstOrDefaultAsync(s => s.StudentId == id);
+            if (student == null) return NotFound();
+
+            _contexts.Students.Remove(student);
+            await _contexts.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        // Send confirmation email
+        private async Task SendingEmail(string email)
+        {
+            var studentmessage = new MimeMessage();
+            studentmessage.From.Add(new MailboxAddress("MamzyHub📚", _emailSettings.SmtpUser));
+            studentmessage.To.Add(new MailboxAddress("", email));
+            studentmessage.Subject = "Welcome to MamzyHub Registration System📚!";
+
+            var builder = new BodyBuilder
             {
                 HtmlBody = $@"
-                    <div style='font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9;'>
-                        <div style='max-width: 600px; margin: auto; background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);'>
-                            <h2 style='color: #2c3e50;'>Registered, Student!</h2>
-                            <p style='font-size: 16px; color: #34495e;'>
-                                Thank you for registering with <strong>MamunStudentReg Student Registration System</strong>.
-                                We're excited to have you on board!
-                            </p>
-                            <p style='font-size: 15px; color: #7f8c8d;'>
-                                If you have any questions or need help, feel free to reply to this email. Many Thanks.
-                            </p>
-                            <br />
-                            <p style='font-size: 14px; color: #95a5a6;'>Best regards,<br><strong>MamzyHub Team.</strong></p>
-                        </div>
-                    </div>"
+                <div style='font-family:Segoe UI,Roboto,sans-serif;background:#f4f4f4;padding:40px 20px;'>
+                <div style='max-width:600px;margin:0 auto;background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);'>
+                <div style='background:#2c3e50;color:#ffffff;padding:30px;text-align:center;'>
+                    <h1 style='margin:0;font-size:28px;'>🎓 Mamzy Student Registration</h1>
+                </div>
+                <div style='padding:30px;'>
+                    <h2 style='color:#2c3e50;font-size:24px;margin-bottom:15px;'>Welcome, Student!</h2>
+                         <p style='font-size:16px;color:#555;'>You've successfully registered on the <strong>MamzyHub📚 Student Registration System</strong>.</p>
+                        <p style='font-size:16px;color:#555;margin-top:15px;'>We're thrilled to have you on board! If you ever need help or have questions, feel free to reply to this email or reach out to the admin.</p>
+
+                <div style='margin:30px 0;text-align:center;'>
+                            <a href='http://localhost:5180/Student' style='background:#2c3e50;color:#fff;text-decoration:none;padding:12px 25px;border-radius:5px;font-weight:bold;'>Visit Portal</a>
+                </div>
+
+                     <p style='font-size:14px;color:#888;margin-top:20px;'>This is an automated message. Please do not reply directly to this email.</p>
+            </div>
+            <div style='background:#ecf0f1;color:#7f8c8d;text-align:center;padding:15px;font-size:13px;'>
+                &copy; {DateTime.Now.Year} MamzyHub Registration. All rights reserved.
+            </div>
+        </div>
+    </div>"
+
             };
 
-            message.Body = bodyBuilder.ToMessageBody();
+            studentmessage.Body = builder.ToMessageBody();
 
             using var cl = new SmtpClient();
             try
             {
                 await cl.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, false);
                 await cl.AuthenticateAsync(_emailSettings.SmtpUser, _emailSettings.SmtpPassword);
-                await cl.SendAsync(message);
+                await cl.SendAsync(studentmessage);
                 await cl.DisconnectAsync(true);
             }
             catch (Exception ex)

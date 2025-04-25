@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace Student_MVC.Models
 {
@@ -8,7 +10,7 @@ namespace Student_MVC.Models
         [Key]
         public int StudentId { get; set; }
 
-        [Required(ErrorMessage = "Full Name is required")]
+        [Required(ErrorMessage = "Student Full Name is required")]
         public string? FullName { get; set; }
 
         [Required(ErrorMessage = "Phone number is required!")]
@@ -25,5 +27,9 @@ namespace Student_MVC.Models
 
         [Required(ErrorMessage = "Gender is required")]
         public string? Gender { get; set; }
+        
+
     }
 }
+
+    

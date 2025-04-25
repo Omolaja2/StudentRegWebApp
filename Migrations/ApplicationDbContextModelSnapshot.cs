@@ -43,6 +43,40 @@ namespace Student_MVC.Migrations
                     b.ToTable("Admins");
                 });
 
+            modelBuilder.Entity("Student_MVC.Models.Course", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CourseId"));
+
+                    b.Property<string>("CourseName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("CourseId");
+
+                    b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("Student_MVC.Models.StudentCourse", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("StudentId", "CourseId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("StudentCourse");
+                });
+
             modelBuilder.Entity("Student_MVC.Models.StudentsModel", b =>
                 {
                     b.Property<int>("StudentId")
@@ -50,6 +84,9 @@ namespace Student_MVC.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("StudentId"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime(6)");
@@ -72,7 +109,49 @@ namespace Student_MVC.Migrations
 
                     b.HasKey("StudentId");
 
+                    b.HasIndex("CourseId");
+
                     b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("Student_MVC.Models.StudentCourse", b =>
+                {
+                    b.HasOne("Student_MVC.Models.Course", "Course")
+                        .WithMany("StudentCourses")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Student_MVC.Models.StudentsModel", "Student")
+                        .WithMany("StudentCourses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("Student_MVC.Models.StudentsModel", b =>
+                {
+                    b.HasOne("Student_MVC.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Student_MVC.Models.Course", b =>
+                {
+                    b.Navigation("StudentCourses");
+                });
+
+            modelBuilder.Entity("Student_MVC.Models.StudentsModel", b =>
+                {
+                    b.Navigation("StudentCourses");
                 });
 #pragma warning restore 612, 618
         }

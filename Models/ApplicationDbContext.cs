@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Student_MVC.Models
 {
- 
+
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -16,5 +16,14 @@ namespace Student_MVC.Models
         public DbSet<AdminModel> Admins { get; set; }
 
         public DbSet<StudentsModel> Students { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+
+        }
+
     }
 }

@@ -21,14 +21,14 @@ namespace Student_MVC.Controllers
 
     
         [HttpPost]
-        public IActionResult Login(AdminModel admin)
+        public IActionResult Login(AdminModel admindetails)
         {
-            var existingAdmin = _context.Admins
-                .FirstOrDefault(a => a.Username == admin.Username && a.Password == admin.Password);
+            var Adminexist = _context.Admins
+                .FirstOrDefault(a => a.Username == admindetails.Username && a.Password == admindetails.Password);
 
-            if (existingAdmin != null)
+            if (Adminexist != null)
             {
-                HttpContext.Session.SetString("AdminUsername", existingAdmin.Username!);
+                HttpContext.Session.SetString("AdminUsername", Adminexist.Username!);
                 HttpContext.Session.SetString("AdminLoggedIn", "true");
                 return RedirectToAction("Index", "Student");
             }
