@@ -7,11 +7,11 @@ namespace Student_MVC.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _contexts;
 
         public AdminController(ApplicationDbContext context)
         {
-            _context = context;
+            _contexts = context;
         }
 
         public IActionResult Login()
@@ -23,21 +23,19 @@ namespace Student_MVC.Controllers
         [HttpPost]
         public IActionResult Login(AdminModel admindetails)
         {
-            var Adminexist = _context.Admins
+            var IfAdminexist = _contexts.Admins
                 .FirstOrDefault(a => a.Username == admindetails.Username && a.Password == admindetails.Password);
 
-            if (Adminexist != null)
+            if (IfAdminexist != null)
             {
-                HttpContext.Session.SetString("AdminUsername", Adminexist.Username!);
+                HttpContext.Session.SetString("AdminUsername", IfAdminexist.Username!);
                 HttpContext.Session.SetString("AdminLoggedIn", "true");
                 return RedirectToAction("Index", "Student");
             }
 
-            ViewBag.Message = "Invalid credentials. Please try again.";
+            ViewBag.Message = "Invalid credentials. Please try again!.";
             return View();
         }
-
-
 
     }
 }

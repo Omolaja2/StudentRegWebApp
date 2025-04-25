@@ -5,7 +5,7 @@ namespace Student_MVC.Data
 {
     public static class StudentRepository
     {
-        private static List<StudentsModel> students = new List<StudentsModel>();
+        private static List<StudentsModel> students = [];
 
         public static List<StudentsModel> GetAll()
         {

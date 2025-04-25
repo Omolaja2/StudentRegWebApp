@@ -9,8 +9,8 @@ namespace Student_MVC.Models
 
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> optionss)
+            : base(optionss)
         {
         }
         public DbSet<AdminModel> Admins { get; set; }
@@ -18,9 +18,9 @@ namespace Student_MVC.Models
         public DbSet<StudentsModel> Students { get; set; }
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilding)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilding);
 
 
         }

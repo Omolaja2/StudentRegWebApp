@@ -21,14 +21,13 @@ namespace Student_MVC.Controllers
             _emailSettings = emailSettings.Value;
         }
 
-        // Display all students
+        
         public IActionResult Index()
         {
             var students = _contexts.Students.ToList();
             return View(students);
         }
 
-        // GET: Register new student
         public IActionResult Register()
         {
             if (HttpContext.Session.GetString("AdminUsername") == null)
@@ -38,7 +37,7 @@ namespace Student_MVC.Controllers
             return View();
         }
 
-        // POST: Register student
+        
         [HttpPost]
         public async Task<IActionResult> Register(StudentsModel student)
         {
@@ -59,7 +58,7 @@ namespace Student_MVC.Controllers
             return View(student);
         }
 
-        // GET: Edit student
+        
         public async Task<IActionResult> Edit(int id)
         {
             var student = await _contexts.Students.FindAsync(id);
@@ -71,7 +70,7 @@ namespace Student_MVC.Controllers
             return View(student);
         }
 
-        // POST: Edit student
+    
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, StudentsModel student)
@@ -105,7 +104,7 @@ namespace Student_MVC.Controllers
             return View(student);
         }
 
-        // Delete student
+    
         public async Task<IActionResult> Delete(int id)
         {
             var student = await _contexts.Students.FirstOrDefaultAsync(s => s.StudentId == id);
@@ -116,13 +115,13 @@ namespace Student_MVC.Controllers
             return RedirectToAction("Index");
         }
 
-        // Send confirmation email
+    
         private async Task SendingEmail(string email)
         {
-            var studentmessage = new MimeMessage();
-            studentmessage.From.Add(new MailboxAddress("MamzyHub📚", _emailSettings.SmtpUser));
-            studentmessage.To.Add(new MailboxAddress("", email));
-            studentmessage.Subject = "Welcome to MamzyHub Registration System📚!";
+            var studentemailmessage = new MimeMessage();
+            studentemailmessage.From.Add(new MailboxAddress("MamzyHub📚", _emailSettings.SmtpUser));
+            studentemailmessage.To.Add(new MailboxAddress("", email));
+            studentemailmessage.Subject = "Welcome to MamzyHub Registration System📚!";
 
             var builder = new BodyBuilder
             {
@@ -141,29 +140,28 @@ namespace Student_MVC.Controllers
                             <a href='http://localhost:5180/Student' style='background:#2c3e50;color:#fff;text-decoration:none;padding:12px 25px;border-radius:5px;font-weight:bold;'>Visit Portal</a>
                 </div>
 
-                     <p style='font-size:14px;color:#888;margin-top:20px;'>This is an automated message. Please do not reply directly to this email.</p>
+                     <p style='font-size:14px;color:#888;margin-top:20px;'>This is an automated message. Please do not reply directly to this Email.</p>
             </div>
             <div style='background:#ecf0f1;color:#7f8c8d;text-align:center;padding:15px;font-size:13px;'>
-                &copy; {DateTime.Now.Year} MamzyHub Registration. All rights reserved.
+                &copy; {DateTime.Now.Year} MamzyHub Registration. All rights reserved🎓.
             </div>
         </div>
     </div>"
 
             };
 
-            studentmessage.Body = builder.ToMessageBody();
-
+            studentemailmessage.Body = builder.ToMessageBody();
             using var cl = new SmtpClient();
             try
             {
                 await cl.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, false);
                 await cl.AuthenticateAsync(_emailSettings.SmtpUser, _emailSettings.SmtpPassword);
-                await cl.SendAsync(studentmessage);
+                await cl.SendAsync(studentemailmessage);
                 await cl.DisconnectAsync(true);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error sending email: {ex.Message}");
+                Console.WriteLine($"Error sending email:{ex.Message}");
             }
         }
     }
